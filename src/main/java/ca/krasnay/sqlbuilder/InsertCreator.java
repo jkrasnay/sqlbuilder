@@ -17,7 +17,7 @@ import org.springframework.jdbc.core.PreparedStatementCreator;
  * new JdbcTemplate(dataSource).update(psc);
  * </pre>
  *
- * @author krasnay
+ * @author John Krasnay <john@krasnay.ca>
  */
 public class InsertCreator implements PreparedStatementCreator {
 

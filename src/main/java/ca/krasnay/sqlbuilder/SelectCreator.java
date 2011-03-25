@@ -25,8 +25,7 @@ import org.springframework.jdbc.core.PreparedStatementCreator;
  * new JdbcTemplate(dataSource).query(psc, new RowMapper() { ... });
  * </pre>
  *
- * @author krasnay
- *
+ * @author John Krasnay <john@krasnay.ca>
  */
 public class SelectCreator implements PreparedStatementCreator {
 
