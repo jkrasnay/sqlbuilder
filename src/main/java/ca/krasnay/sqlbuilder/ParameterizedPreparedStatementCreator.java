@@ -34,7 +34,7 @@ import org.springframework.jdbc.core.PreparedStatementCreator;
  * @author John Krasnay <john@krasnay.ca>
  *
  */
-public class ParameterizedPreparedStatementCreator implements PreparedStatementCreator {
+public class ParameterizedPreparedStatementCreator implements Cloneable, PreparedStatementCreator {
 
     static class SqlAndParams {
 
@@ -70,6 +70,23 @@ public class ParameterizedPreparedStatementCreator implements PreparedStatementC
     private Map<String, Object> parameterMap = new HashMap<String, Object>();
 
     public ParameterizedPreparedStatementCreator() {
+    }
+
+    /**
+     * Copy constructor. Used by {@link #clone()}.
+     *
+     * @param other
+     *            ParameterizedPreparedStatementCreator being cloned.
+     */
+     protected ParameterizedPreparedStatementCreator(ParameterizedPreparedStatementCreator other) {
+        this.sql = other.sql;
+        for (String key : other.parameterMap.keySet()) {
+            this.parameterMap.put(key, other.parameterMap.get(key));
+        }
+    }
+
+    public ParameterizedPreparedStatementCreator clone() {
+        return new ParameterizedPreparedStatementCreator(this);
     }
 
     public PreparedStatement createPreparedStatement(Connection con) throws SQLException {

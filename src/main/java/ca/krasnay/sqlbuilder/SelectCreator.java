@@ -27,7 +27,7 @@ import org.springframework.jdbc.core.PreparedStatementCreator;
  *
  * @author John Krasnay <john@krasnay.ca>
  */
-public class SelectCreator implements PreparedStatementCreator {
+public class SelectCreator implements Cloneable, PreparedStatementCreator {
 
     private SelectBuilder builder = new SelectBuilder();
 
@@ -38,10 +38,25 @@ public class SelectCreator implements PreparedStatementCreator {
     public SelectCreator() {
     }
 
+    /**
+     * Copy constructor. Used by {@link #clone()}.
+     *
+     * @param other
+     *            SelectCreator being cloned.
+     */
+    protected SelectCreator(SelectCreator other) {
+        this.builder = other.builder.clone();
+        this.paramIndex = other.paramIndex;
+        this.ppsc = other.ppsc.clone();
+    }
 
     public SelectCreator and(String expr) {
         builder.and(expr);
         return this;
+    }
+
+    public SelectCreator clone() {
+        return new SelectCreator(this);
     }
 
     public SelectCreator column(String name) {
@@ -57,6 +72,11 @@ public class SelectCreator implements PreparedStatementCreator {
     public PreparedStatement createPreparedStatement(Connection conn) throws SQLException {
         ppsc.setSql(builder.toString());
         return ppsc.createPreparedStatement(conn);
+    }
+
+    public SelectCreator distinct() {
+        builder.distinct();
+        return this;
     }
 
     public SelectCreator forUpdate() {
@@ -76,6 +96,11 @@ public class SelectCreator implements PreparedStatementCreator {
 
     public SelectCreator having(String expr) {
         builder.having(expr);
+        return this;
+    }
+
+    public SelectCreator join(String join) {
+        builder.join(join);
         return this;
     }
 

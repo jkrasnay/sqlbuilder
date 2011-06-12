@@ -69,7 +69,9 @@ import java.util.List;
  *
  * @author John Krasnay <john@krasnay.ca>
  */
-public class SelectBuilder extends AbstractSqlBuilder {
+public class SelectBuilder extends AbstractSqlBuilder implements Cloneable {
+
+    private boolean distinct;
 
     private List<String> columns = new ArrayList<String>();
 
@@ -100,6 +102,28 @@ public class SelectBuilder extends AbstractSqlBuilder {
     }
 
     /**
+     * Copy constructor. Used by {@link #clone()}.
+     *
+     * @param other
+     *            SelectBuilder being cloned.
+     */
+    protected SelectBuilder(SelectBuilder other) {
+
+        this.distinct = other.distinct;
+        this.forUpdate = other.forUpdate;
+        this.noWait = other.noWait;
+
+        this.columns.addAll(other.columns);
+        this.tables.addAll(other.tables);
+        this.joins.addAll(other.joins);
+        this.leftJoins.addAll(other.leftJoins);
+        this.wheres.addAll(other.wheres);
+        this.orderBys.addAll(other.orderBys);
+        this.groupBys.addAll(other.groupBys);
+        this.havings.addAll(other.havings);
+    }
+
+    /**
      * Alias for {@link #where(String)}.
      */
     public SelectBuilder and(String expr) {
@@ -116,6 +140,15 @@ public class SelectBuilder extends AbstractSqlBuilder {
         if (groupBy) {
             groupBys.add(name);
         }
+        return this;
+    }
+
+    public SelectBuilder clone() {
+        return new SelectBuilder(this);
+    }
+
+    public SelectBuilder distinct() {
+        this.distinct = true;
         return this;
     }
 
@@ -166,6 +199,10 @@ public class SelectBuilder extends AbstractSqlBuilder {
     public String toString() {
 
         StringBuilder sql = new StringBuilder("select ");
+
+        if (distinct) {
+            sql.append("distinct ");
+        }
 
         if (columns.size() == 0) {
             sql.append("*");
