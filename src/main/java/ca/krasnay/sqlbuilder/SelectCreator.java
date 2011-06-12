@@ -69,6 +69,23 @@ public class SelectCreator implements Cloneable, PreparedStatementCreator {
         return this;
     }
 
+    /**
+     * Returns a PreparedStatementCreator that returns a count of the rows that
+     * this creator would return.
+     *
+     * @param dialect
+     *            Database dialect.
+     */
+    public PreparedStatementCreator count(final Dialect dialect) {
+        return new PreparedStatementCreator() {
+            public PreparedStatement createPreparedStatement(Connection con)
+            throws SQLException {
+                ppsc.setSql(dialect.createCountSelect(builder.toString()));
+                return ppsc.createPreparedStatement(con);
+            }
+        };
+    }
+
     public PreparedStatement createPreparedStatement(Connection conn) throws SQLException {
         ppsc.setSql(builder.toString());
         return ppsc.createPreparedStatement(conn);
@@ -117,6 +134,27 @@ public class SelectCreator implements Cloneable, PreparedStatementCreator {
     public SelectCreator orderBy(String name) {
         builder.orderBy(name);
         return this;
+    }
+
+    /**
+     * Returns a PreparedStatementCreator that returns a page of the underlying
+     * result set.
+     *
+     * @param dialect
+     *            Database dialect to use.
+     * @param limit
+     *            Maximum number of rows to return.
+     * @param offset
+     *            Index of the first row to return.
+     */
+    public PreparedStatementCreator page(final Dialect dialect, final int limit, final int offset) {
+        return new PreparedStatementCreator() {
+            public PreparedStatement createPreparedStatement(Connection con)
+                    throws SQLException {
+                ppsc.setSql(dialect.createPageSelect(builder.toString(), limit, offset));
+                return ppsc.createPreparedStatement(con);
+            }
+        };
     }
 
     public SelectCreator setParameter(String name, Object value) {
