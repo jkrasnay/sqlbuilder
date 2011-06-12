@@ -195,6 +195,24 @@ public class SelectBuilder extends AbstractSqlBuilder implements Cloneable {
         return this;
     }
 
+    /**
+     * Adds an ORDER BY item with a direction indicator.
+     *
+     * @param name
+     *            Name of the column by which to sort.
+     * @param ascending
+     *            If true, specifies the direction "asc", otherwise, specifies
+     *            the direction "desc".
+     */
+    public SelectBuilder orderBy(String name, boolean ascending) {
+        if (ascending) {
+            orderBys.add(name + " asc");
+        } else {
+            orderBys.add(name + " desc");
+        }
+        return this;
+    }
+
     @Override
     public String toString() {
 

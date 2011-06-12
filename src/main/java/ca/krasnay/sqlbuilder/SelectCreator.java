@@ -136,6 +136,11 @@ public class SelectCreator implements Cloneable, PreparedStatementCreator {
         return this;
     }
 
+    public SelectCreator orderBy(String name, boolean ascending) {
+        builder.orderBy(name, ascending);
+        return this;
+    }
+
     /**
      * Returns a PreparedStatementCreator that returns a page of the underlying
      * result set.
