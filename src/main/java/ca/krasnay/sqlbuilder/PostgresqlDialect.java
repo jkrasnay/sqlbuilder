@@ -8,7 +8,7 @@ package ca.krasnay.sqlbuilder;
 public class PostgresqlDialect implements Dialect {
 
     public String createCountSelect(String sql) {
-        return "select count(*) from (" + sql + ")";
+        return "select count(*) from (" + sql + ") a";
     }
 
     public String createPageSelect(String sql, int limit, int offset) {
