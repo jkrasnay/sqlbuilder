@@ -1,5 +1,6 @@
 package ca.krasnay.sqlbuilder;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -69,7 +70,9 @@ import java.util.List;
  *
  * @author John Krasnay <john@krasnay.ca>
  */
-public class SelectBuilder extends AbstractSqlBuilder implements Cloneable {
+public class SelectBuilder extends AbstractSqlBuilder implements Cloneable, Serializable {
+
+    private static final long serialVersionUID = 1;
 
     private boolean distinct;
 

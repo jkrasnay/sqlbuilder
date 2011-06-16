@@ -1,5 +1,6 @@
 package ca.krasnay.sqlbuilder;
 
+import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -27,7 +28,9 @@ import org.springframework.jdbc.core.PreparedStatementCreator;
  *
  * @author John Krasnay <john@krasnay.ca>
  */
-public class SelectCreator implements Cloneable, PreparedStatementCreator {
+public class SelectCreator implements Cloneable, PreparedStatementCreator, Serializable {
+
+    private static final long serialVersionUID = 1;
 
     private SelectBuilder builder = new SelectBuilder();
 

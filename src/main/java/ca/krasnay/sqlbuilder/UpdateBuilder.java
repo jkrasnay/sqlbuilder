@@ -1,5 +1,6 @@
 package ca.krasnay.sqlbuilder;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -8,7 +9,9 @@ import java.util.List;
  *
  * @author John Krasnay <john@krasnay.ca>
  */
-public class UpdateBuilder extends AbstractSqlBuilder {
+public class UpdateBuilder extends AbstractSqlBuilder implements Serializable {
+
+    private static final long serialVersionUID = 1;
 
     private String table;
 

@@ -1,5 +1,6 @@
 package ca.krasnay.sqlbuilder;
 
+import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -34,7 +35,7 @@ import org.springframework.jdbc.core.PreparedStatementCreator;
  * @author John Krasnay <john@krasnay.ca>
  *
  */
-public class ParameterizedPreparedStatementCreator implements Cloneable, PreparedStatementCreator {
+public class ParameterizedPreparedStatementCreator implements Cloneable, PreparedStatementCreator, Serializable {
 
     static class SqlAndParams {
 
@@ -55,6 +56,8 @@ public class ParameterizedPreparedStatementCreator implements Cloneable, Prepare
             return sql;
         }
     }
+
+    private static final long serialVersionUID = 1;
 
     private static final Logger log = LoggerFactory.getLogger(ParameterizedPreparedStatementCreator.class);
 
@@ -91,9 +94,9 @@ public class ParameterizedPreparedStatementCreator implements Cloneable, Prepare
 
     public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
 
-        log.debug("createPreparedStatement: %s", sql);
+        log.debug("createPreparedStatement: {}", sql);
         for (String key : parameterMap.keySet()) {
-            log.debug("    %s => %s", key, parameterMap.get(key));
+            log.debug("    {} => {}", key, parameterMap.get(key));
         }
 
         SqlAndParams sap = createSqlAndParams();
