@@ -53,11 +53,21 @@ public class SelectCreator implements Cloneable, PreparedStatementCreator, Seria
         this.ppsc = other.ppsc.clone();
     }
 
+    /**
+     * Allocate and return a new parameter that is unique within this
+     * SelectCreator. The parameter is of the form "paramN", where N is an
+     * integer that is incremented each time this method is called.
+     */
+    public String allocateParameter() {
+        return "param" + paramIndex++;
+    }
+
     public SelectCreator and(String expr) {
         builder.and(expr);
         return this;
     }
 
+    @Override
     public SelectCreator clone() {
         return new SelectCreator(this);
     }
@@ -188,8 +198,7 @@ public class SelectCreator implements Cloneable, PreparedStatementCreator, Seria
 
     public SelectCreator whereEquals(String expr, Object value) {
 
-        String param = "param" + paramIndex;
-        paramIndex++;
+        String param = allocateParameter();
 
         builder.where(expr + " = :" + param);
         ppsc.setParameter(param, value);
