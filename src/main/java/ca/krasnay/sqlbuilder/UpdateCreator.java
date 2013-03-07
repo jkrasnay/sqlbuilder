@@ -1,11 +1,8 @@
 package ca.krasnay.sqlbuilder;
 
-import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-
-import org.springframework.jdbc.core.PreparedStatementCreator;
 
 /**
  * A Spring PreparedStatementCreator that you can use like an UpdateBuilder.
@@ -20,7 +17,7 @@ import org.springframework.jdbc.core.PreparedStatementCreator;
  *
  * @author John Krasnay <john@krasnay.ca>
  */
-public class UpdateCreator implements PreparedStatementCreator, Serializable {
+public class UpdateCreator extends AbstractSqlCreator {
 
     private static final long serialVersionUID = 1;
 
@@ -58,9 +55,13 @@ public class UpdateCreator implements PreparedStatementCreator, Serializable {
         return this;
     }
 
-    public UpdateCreator whereEquals(String column, Object value) {
-        builder.where(column + " = :" + column);
-        ppsc.setParameter(column, value);
+    public UpdateCreator whereEquals(String expr, Object value) {
+
+        String param = allocateParameter();
+
+        builder.where(expr + " = :" + param);
+        ppsc.setParameter(param, value);
+
         return this;
     }
 

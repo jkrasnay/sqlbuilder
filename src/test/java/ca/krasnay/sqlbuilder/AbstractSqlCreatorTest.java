@@ -2,7 +2,7 @@ package ca.krasnay.sqlbuilder;
 
 import junit.framework.TestCase;
 
-public class SelectCreatorTest extends TestCase {
+public class AbstractSqlCreatorTest extends TestCase {
 
     public void testAllocateParameter() {
 

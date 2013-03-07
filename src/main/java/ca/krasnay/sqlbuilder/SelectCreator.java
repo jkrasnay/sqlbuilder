@@ -1,6 +1,5 @@
 package ca.krasnay.sqlbuilder;
 
-import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -28,15 +27,13 @@ import org.springframework.jdbc.core.PreparedStatementCreator;
  *
  * @author John Krasnay <john@krasnay.ca>
  */
-public class SelectCreator implements Cloneable, PreparedStatementCreator, Serializable {
+public class SelectCreator extends AbstractSqlCreator implements Cloneable {
 
     private static final long serialVersionUID = 1;
 
     private SelectBuilder builder = new SelectBuilder();
 
     private ParameterizedPreparedStatementCreator ppsc = new ParameterizedPreparedStatementCreator();
-
-    private int paramIndex;
 
     public SelectCreator() {
     }
@@ -48,18 +45,9 @@ public class SelectCreator implements Cloneable, PreparedStatementCreator, Seria
      *            SelectCreator being cloned.
      */
     protected SelectCreator(SelectCreator other) {
+        super(other);
         this.builder = other.builder.clone();
-        this.paramIndex = other.paramIndex;
         this.ppsc = other.ppsc.clone();
-    }
-
-    /**
-     * Allocate and return a new parameter that is unique within this
-     * SelectCreator. The parameter is of the form "paramN", where N is an
-     * integer that is incremented each time this method is called.
-     */
-    public String allocateParameter() {
-        return "param" + paramIndex++;
     }
 
     public SelectCreator and(String expr) {
