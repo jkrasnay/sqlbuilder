@@ -68,4 +68,21 @@ public class SelectBuilderTest extends TestCase {
 
     }
 
+    public void testUnions() {
+
+        SelectBuilder sb = new SelectBuilder()
+        .column("a")
+        .column("b")
+        .from("Foo")
+        .where("a > 10")
+        .orderBy("1");
+
+        sb.union(new SelectBuilder()
+        .column("c")
+        .column("d")
+        .from("Bar"));
+
+        assertEquals("select a, b from Foo where a > 10 union select c, d from Bar order by 1", sb.toString());
+
+    }
 }

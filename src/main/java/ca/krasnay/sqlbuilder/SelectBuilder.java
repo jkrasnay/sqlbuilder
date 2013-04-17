@@ -86,11 +86,13 @@ public class SelectBuilder extends AbstractSqlBuilder implements Cloneable, Seri
 
     private List<String> wheres = new ArrayList<String>();
 
-    private List<String> orderBys = new ArrayList<String>();
-
     private List<String> groupBys = new ArrayList<String>();
 
     private List<String> havings = new ArrayList<String>();
+
+    private List<SelectBuilder> unions = new ArrayList<SelectBuilder>();
+
+    private List<String> orderBys = new ArrayList<String>();
 
     private boolean forUpdate;
 
@@ -121,9 +123,14 @@ public class SelectBuilder extends AbstractSqlBuilder implements Cloneable, Seri
         this.joins.addAll(other.joins);
         this.leftJoins.addAll(other.leftJoins);
         this.wheres.addAll(other.wheres);
-        this.orderBys.addAll(other.orderBys);
         this.groupBys.addAll(other.groupBys);
         this.havings.addAll(other.havings);
+
+        for (SelectBuilder sb : other.unions) {
+            this.unions.add(sb.clone());
+        }
+
+        this.orderBys.addAll(other.orderBys);
     }
 
     /**
@@ -146,6 +153,7 @@ public class SelectBuilder extends AbstractSqlBuilder implements Cloneable, Seri
         return this;
     }
 
+    @Override
     public SelectBuilder clone() {
         return new SelectBuilder(this);
     }
@@ -237,16 +245,28 @@ public class SelectBuilder extends AbstractSqlBuilder implements Cloneable, Seri
         appendList(sql, wheres, " where ", " and ");
         appendList(sql, groupBys, " group by ", ", ");
         appendList(sql, havings, " having ", " and ");
+        appendList(sql, unions, " union ", " union ");
         appendList(sql, orderBys, " order by ", ", ");
 
         if (forUpdate) {
             sql.append(" for update");
             if (noWait) {
-                sql.append(" NOWAIT");
+                sql.append(" nowait");
             }
         }
 
         return sql.toString();
+    }
+
+    /**
+     * Adds a "union" select builder. The generated SQL will union this query
+     * with the result of the main query. The provided builder must have the
+     * same columns as the parent select builder and must not use "order by" or
+     * "for update".
+     */
+    public SelectBuilder union(SelectBuilder unionBuilder) {
+        unions.add(unionBuilder);
+        return this;
     }
 
     public SelectBuilder where(String expr) {

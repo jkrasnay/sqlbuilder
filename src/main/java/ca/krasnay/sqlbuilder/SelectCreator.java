@@ -179,6 +179,12 @@ public class SelectCreator extends AbstractSqlCreator implements Cloneable {
         return sb.toString();
     }
 
+    public UnionSelectCreator union() {
+        SelectBuilder unionSelectBuilder = new SelectBuilder();
+        builder.union(unionSelectBuilder);
+        return new UnionSelectCreator(this, unionSelectBuilder);
+    }
+
     public SelectCreator where(String expr) {
         builder.where(expr);
         return this;

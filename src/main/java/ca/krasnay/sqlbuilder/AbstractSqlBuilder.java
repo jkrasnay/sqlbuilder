@@ -16,18 +16,18 @@ public abstract class AbstractSqlBuilder {
      *            StringBuilder to which the constructed string will be
      *            appended.
      * @param list
-     *            List of strings to join.
+     *            List of objects (usually strings) to join.
      * @param init
      *            String to be added to the start of the list, before any of the
      *            items.
      * @param sep
      *            Separator string to be added between items in the list.
      */
-    protected void appendList(StringBuilder sql, List<String> list, String init, String sep) {
+    protected void appendList(StringBuilder sql, List<?> list, String init, String sep) {
 
         boolean first = true;
 
-        for (String s : list) {
+        for (Object s : list) {
             if (first) {
                 sql.append(init);
             } else {
