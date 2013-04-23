@@ -107,6 +107,14 @@ public class SelectCreator extends AbstractSqlCreator implements Cloneable {
         return this;
     }
 
+    public List<UnionSelectCreator> getUnions() {
+        List<UnionSelectCreator> unions = new ArrayList<UnionSelectCreator>();
+        for (SelectBuilder unionSB : builder.getUnions()) {
+            unions.add(new UnionSelectCreator(this, unionSB));
+        }
+        return unions;
+    }
+
     public SelectCreator groupBy(String expr) {
         builder.groupBy(expr);
         return this;

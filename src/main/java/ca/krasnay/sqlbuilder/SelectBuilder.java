@@ -173,6 +173,10 @@ public class SelectBuilder extends AbstractSqlBuilder implements Cloneable, Seri
         return this;
     }
 
+    public List<SelectBuilder> getUnions() {
+        return unions;
+    }
+
     public SelectBuilder groupBy(String expr) {
         groupBys.add(expr);
         return this;
