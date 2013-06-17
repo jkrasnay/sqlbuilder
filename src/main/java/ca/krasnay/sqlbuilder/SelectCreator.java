@@ -207,4 +207,26 @@ public class SelectCreator extends AbstractSqlCreator implements Cloneable {
 
         return this;
     }
+
+    public SelectCreator whereIn(String expr, List<?> values) {
+
+        StringBuilder sb = new StringBuilder();
+        sb.append(expr).append(" in (");
+
+        boolean first = true;
+        for (Object value : values) {
+            String param = allocateParameter();
+            ppsc.setParameter(param, value);
+            if (!first) {
+                sb.append(", ");
+            }
+            sb.append(":").append(param);
+            first = false;
+        }
+
+        sb.append(")");
+        builder.where(sb.toString());
+
+        return this;
+    }
 }
