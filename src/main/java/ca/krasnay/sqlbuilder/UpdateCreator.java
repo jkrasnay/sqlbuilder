@@ -1,8 +1,5 @@
 package ca.krasnay.sqlbuilder;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
 
 /**
  * A Spring PreparedStatementCreator that you can use like an UpdateBuilder.
@@ -23,15 +20,13 @@ public class UpdateCreator extends AbstractSqlCreator {
 
     private UpdateBuilder builder;
 
-    private ParameterizedPreparedStatementCreator ppsc = new ParameterizedPreparedStatementCreator();
-
     public UpdateCreator(String table) {
         builder = new UpdateBuilder(table);
     }
 
-    public PreparedStatement createPreparedStatement(Connection conn) throws SQLException {
-        ppsc.setSql(builder.toString());
-        return ppsc.createPreparedStatement(conn);
+    @Override
+    protected AbstractSqlBuilder getBuilder() {
+        return builder;
     }
 
     public UpdateCreator set(String expr) {
@@ -39,14 +34,15 @@ public class UpdateCreator extends AbstractSqlCreator {
         return this;
     }
 
+    @Override
     public UpdateCreator setParameter(String name, Object value) {
-        ppsc.setParameter(name, value);
+        super.setParameter(name, value);
         return this;
     }
 
     public UpdateCreator setValue(String column, Object value) {
         builder.set(column + " = :" + column);
-        ppsc.setParameter(column, value);
+        setParameter(column, value);
         return this;
     }
 
@@ -55,12 +51,18 @@ public class UpdateCreator extends AbstractSqlCreator {
         return this;
     }
 
+    public UpdateCreator where(Predicate predicate) {
+        predicate.init(this);
+        builder.where(predicate.toSql());
+        return this;
+    }
+
     public UpdateCreator whereEquals(String expr, Object value) {
 
         String param = allocateParameter();
 
         builder.where(expr + " = :" + param);
-        ppsc.setParameter(param, value);
+        setParameter(param, value);
 
         return this;
     }

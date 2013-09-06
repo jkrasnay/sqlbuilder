@@ -1,8 +1,5 @@
 package ca.krasnay.sqlbuilder;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
 
 /**
  * A Spring PreparedStatementCreator that you can use like a DeleteBuilder.
@@ -23,19 +20,23 @@ public class DeleteCreator extends AbstractSqlCreator {
 
     private DeleteBuilder builder;
 
-    private ParameterizedPreparedStatementCreator ppsc = new ParameterizedPreparedStatementCreator();
-
     public DeleteCreator(String table) {
         builder = new DeleteBuilder(table);
     }
 
-    public PreparedStatement createPreparedStatement(Connection conn) throws SQLException {
-        ppsc.setSql(builder.toString());
-        return ppsc.createPreparedStatement(conn);
+    @Override
+    protected AbstractSqlBuilder getBuilder() {
+        return builder;
     }
 
     public DeleteCreator where(String expr) {
         builder.where(expr);
+        return this;
+    }
+
+    public DeleteCreator where(Predicate predicate) {
+        predicate.init(this);
+        builder.where(predicate.toSql());
         return this;
     }
 
@@ -44,7 +45,7 @@ public class DeleteCreator extends AbstractSqlCreator {
         String param = allocateParameter();
 
         builder.where(expr + " = :" + param);
-        ppsc.setParameter(param, value);
+        setParameter(param, value);
 
         return this;
     }

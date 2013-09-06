@@ -35,7 +35,7 @@ public class SelectCreatorTest extends TestCase {
 
         assertEquals("select * from Emp where name in (:param0, :param1, :param2)", builder.toString());
 
-        ParameterizedPreparedStatementCreator ppsc = (ParameterizedPreparedStatementCreator) getValue(sc, "ppsc");
+        ParameterizedPreparedStatementCreator ppsc = sc.getPreparedStatementCreator();
 
         Map<String, Object> map = ppsc.getParameterMap();
 

@@ -33,8 +33,6 @@ public class SelectCreator extends AbstractSqlCreator implements Cloneable {
 
     private SelectBuilder builder = new SelectBuilder();
 
-    private ParameterizedPreparedStatementCreator ppsc = new ParameterizedPreparedStatementCreator();
-
     public SelectCreator() {
     }
 
@@ -47,7 +45,6 @@ public class SelectCreator extends AbstractSqlCreator implements Cloneable {
     protected SelectCreator(SelectCreator other) {
         super(other);
         this.builder = other.builder.clone();
-        this.ppsc = other.ppsc.clone();
     }
 
     public SelectCreator and(String expr) {
@@ -81,15 +78,11 @@ public class SelectCreator extends AbstractSqlCreator implements Cloneable {
         return new PreparedStatementCreator() {
             public PreparedStatement createPreparedStatement(Connection con)
             throws SQLException {
-                ppsc.setSql(dialect.createCountSelect(builder.toString()));
-                return ppsc.createPreparedStatement(con);
+                return getPreparedStatementCreator()
+                .setSql(dialect.createCountSelect(builder.toString()))
+                .createPreparedStatement(con);
             }
         };
-    }
-
-    public PreparedStatement createPreparedStatement(Connection conn) throws SQLException {
-        ppsc.setSql(builder.toString());
-        return ppsc.createPreparedStatement(conn);
     }
 
     public SelectCreator distinct() {
@@ -105,6 +98,11 @@ public class SelectCreator extends AbstractSqlCreator implements Cloneable {
     public SelectCreator from(String table) {
         builder.from(table);
         return this;
+    }
+
+    @Override
+    protected AbstractSqlBuilder getBuilder() {
+        return builder;
     }
 
     public List<UnionSelectCreator> getUnions() {
@@ -163,21 +161,23 @@ public class SelectCreator extends AbstractSqlCreator implements Cloneable {
      */
     public PreparedStatementCreator page(final Dialect dialect, final int limit, final int offset) {
         return new PreparedStatementCreator() {
-            public PreparedStatement createPreparedStatement(Connection con)
-                    throws SQLException {
-                ppsc.setSql(dialect.createPageSelect(builder.toString(), limit, offset));
-                return ppsc.createPreparedStatement(con);
+            public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
+                return getPreparedStatementCreator()
+                .setSql(dialect.createPageSelect(builder.toString(), limit, offset))
+                .createPreparedStatement(con);
             }
         };
     }
 
+    @Override
     public SelectCreator setParameter(String name, Object value) {
-        ppsc.setParameter(name, value);
+        super.setParameter(name, value);
         return this;
     }
 
     @Override
     public String toString() {
+        ParameterizedPreparedStatementCreator ppsc = getPreparedStatementCreator();
         StringBuilder sb = new StringBuilder(builder.toString());
         List<String> params = new ArrayList<String>(ppsc.getParameterMap().keySet());
         Collections.sort(params);
@@ -198,12 +198,18 @@ public class SelectCreator extends AbstractSqlCreator implements Cloneable {
         return this;
     }
 
+    public SelectCreator where(Predicate predicate) {
+        predicate.init(this);
+        builder.where(predicate.toSql());
+        return this;
+    }
+
     public SelectCreator whereEquals(String expr, Object value) {
 
         String param = allocateParameter();
 
         builder.where(expr + " = :" + param);
-        ppsc.setParameter(param, value);
+        setParameter(param, value);
 
         return this;
     }
@@ -216,7 +222,7 @@ public class SelectCreator extends AbstractSqlCreator implements Cloneable {
         boolean first = true;
         for (Object value : values) {
             String param = allocateParameter();
-            ppsc.setParameter(param, value);
+            setParameter(param, value);
             if (!first) {
                 sb.append(", ");
             }

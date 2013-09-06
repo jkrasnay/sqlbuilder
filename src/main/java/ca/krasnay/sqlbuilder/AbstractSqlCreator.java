@@ -1,6 +1,9 @@
 package ca.krasnay.sqlbuilder;
 
 import java.io.Serializable;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 
 import org.springframework.jdbc.core.PreparedStatementCreator;
 
@@ -12,6 +15,8 @@ import org.springframework.jdbc.core.PreparedStatementCreator;
 public abstract class AbstractSqlCreator implements PreparedStatementCreator, Serializable  {
 
     private int paramIndex;
+
+    private ParameterizedPreparedStatementCreator ppsc = new ParameterizedPreparedStatementCreator();
 
     public AbstractSqlCreator() {
 
@@ -25,6 +30,7 @@ public abstract class AbstractSqlCreator implements PreparedStatementCreator, Se
      */
     public AbstractSqlCreator(AbstractSqlCreator other) {
         this.paramIndex = other.paramIndex;
+        this.ppsc = other.ppsc.clone();
     }
 
     /**
@@ -35,5 +41,30 @@ public abstract class AbstractSqlCreator implements PreparedStatementCreator, Se
     public String allocateParameter() {
         return "param" + paramIndex++;
     }
+
+    public PreparedStatement createPreparedStatement(Connection conn) throws SQLException {
+        return ppsc.setSql(getBuilder().toString()).createPreparedStatement(conn);
+    }
+
+    /**
+     * Returns the builder for this creator.
+     */
+    protected abstract AbstractSqlBuilder getBuilder();
+
+    /**
+     * Returns the prepared statement creator for this creator.
+     */
+    protected ParameterizedPreparedStatementCreator getPreparedStatementCreator() {
+        return ppsc;
+    }
+
+    /**
+     * Sets a parameter for the creator.
+     */
+    public AbstractSqlCreator setParameter(String name, Object value) {
+        ppsc.setParameter(name, value);
+        return this;
+    }
+
 
 }
