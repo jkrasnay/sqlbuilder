@@ -20,6 +20,20 @@ import java.util.List;
 public final class Predicates {
 
     /**
+     * Joins a series of predicates with AND.
+     */
+    public static Predicate and(Predicate... predicates) {
+        return join("and", Arrays.asList(predicates));
+    }
+
+    /**
+     * Joins a series of predicates with AND.
+     */
+    public static Predicate and(List<Predicate> predicates) {
+        return join("and", predicates);
+    }
+
+    /**
      * Adds an equals clause to a creator.
      *
      * @param expr
@@ -97,6 +111,32 @@ public final class Predicates {
     }
 
     /**
+     * Factory for 'and' and 'or' predicates.
+     */
+    private static Predicate join(final String joinWord, final List<Predicate> preds) {
+        return new Predicate() {
+            public void init(AbstractSqlCreator creator) {
+                for (Predicate p : preds) {
+                    p.init(creator);
+                }
+            }
+            public String toSql() {
+                StringBuilder sb = new StringBuilder()
+                .append("(");
+                boolean first = true;
+                for (Predicate p : preds) {
+                    if (!first) {
+                        sb.append(" ").append(joinWord).append(" ");
+                    }
+                    sb.append(p.toSql());
+                    first = false;
+                }
+                return sb.append(")").toString();
+            }
+        };
+    }
+
+    /**
      * Adds an EXISTS clause to a creator. Typical usage is as follows:
      *
      * <pre>
@@ -130,4 +170,64 @@ public final class Predicates {
             }
         };
     }
+
+    /**
+     * Joins a series of predicates with OR.
+     */
+    public static Predicate or(Predicate... predicates) {
+        return join("or", Arrays.asList(predicates));
+    }
+
+    /**
+     * Joins a series of predicates with OR.
+     */
+    public static Predicate or(List<Predicate> predicates) {
+        return join("or", predicates);
+    }
+
+
+    /*
+     * Ideas for other predicates:
+     *
+     * public static Predicate neq(final String expr, final Object value) { ... }
+     *
+     * public static Predicate isNull(String expr) { ... }
+     * public static Predicate notNull(String expr) { ... }
+     *
+     *
+     * String:
+     *
+     * public static Predicate eqIgnoreCase(String expr, Object) { ... }
+     * public static Predicate neqIgnoreCase(final String expr, final Object value) { ... }
+     * public static Predicate like(String expr, String) { ... }
+     * public static Predicate contains(final String expr, final String value) { ... }
+     * public static Predicate startsWith(final String expr, final String value) { ... }
+     *
+     *
+     * Numeric:
+     *
+     * public static Predicate gt(String expr, Number) { ... }
+     * public static Predicate gte(String expr, Number) { ... }
+     * public static Predicate lt(String expr, Number) { ... }
+     * public static Predicate lte(String expr, Number) { ... }
+     *
+     *
+     * Date/time:
+     *
+     * public static Predicate after(String expr, java.util.Date) { ... }
+     * public static Predicate before(String expr, java.util.Date) { ... }
+     * public static Predicate between(String expr, java.sql.Date, java.sql.Date) { ... }
+     * public static Predicate onOrAfter(String expr, java.sql.Date) { ... }
+     * public static Predicate onOrBefore(String expr, java.sql.Date) { ... }
+     *
+     * public class Duration {
+     *     public static Duration days(int days) { ... }
+     *     public static Duration hours(int hours) { ... }
+     *     public static Duration minutes(int minutes) { ... }
+     * }
+     *
+     * public static Predicate olderThan(String expr, Duration duration) { ... }
+     * public static Predicate within(String expr, Duration duration) { ... }
+     *
+     */
 }
