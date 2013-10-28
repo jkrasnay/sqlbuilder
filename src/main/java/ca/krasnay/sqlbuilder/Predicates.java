@@ -154,6 +154,28 @@ public final class Predicates {
     }
 
     /**
+     * Adds a not equals clause to a creator.
+     *
+     * @param expr
+     *            SQL expression to be compared for equality.
+     * @param value
+     *            Value to which the SQL expression is compared.
+     */
+    public static Predicate neq(final String expr, final Object value) {
+        return new Predicate() {
+            private String param;
+            public void init(AbstractSqlCreator creator) {
+                param = creator.allocateParameter();
+                creator.setParameter(param, value);
+            }
+            public String toSql() {
+                return String.format("%s <> :%s", expr, param);
+            }
+        };
+    }
+
+
+    /**
      * Inverts the sense of the given child predicate. In SQL terms, this
      * surrounds the given predicate with "not (...)".
      *
