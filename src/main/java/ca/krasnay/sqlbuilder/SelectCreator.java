@@ -48,8 +48,11 @@ public class SelectCreator extends AbstractSqlCreator implements Cloneable {
     }
 
     public SelectCreator and(String expr) {
-        builder.and(expr);
-        return this;
+        return where(expr);
+    }
+
+    public SelectCreator and(Predicate predicate) {
+        return where(predicate);
     }
 
     @Override
