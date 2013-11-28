@@ -76,7 +76,7 @@ public class SelectBuilder extends AbstractSqlBuilder implements Cloneable, Seri
 
     private boolean distinct;
 
-    private List<String> columns = new ArrayList<String>();
+    private List<Object> columns = new ArrayList<Object>();
 
     private List<String> tables = new ArrayList<String>();
 
@@ -118,7 +118,14 @@ public class SelectBuilder extends AbstractSqlBuilder implements Cloneable, Seri
         this.forUpdate = other.forUpdate;
         this.noWait = other.noWait;
 
-        this.columns.addAll(other.columns);
+        for (Object column : other.columns) {
+            if (column instanceof SubSelectBuilder) {
+                this.columns.add(((SubSelectBuilder) column).clone());
+            } else {
+                this.columns.add(column);
+            }
+        }
+
         this.tables.addAll(other.tables);
         this.joins.addAll(other.joins);
         this.leftJoins.addAll(other.leftJoins);
@@ -142,6 +149,11 @@ public class SelectBuilder extends AbstractSqlBuilder implements Cloneable, Seri
 
     public SelectBuilder column(String name) {
         columns.add(name);
+        return this;
+    }
+
+    public SelectBuilder column(SubSelectBuilder subSelect) {
+        columns.add(subSelect);
         return this;
     }
 

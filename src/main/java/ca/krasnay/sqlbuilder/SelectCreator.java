@@ -178,6 +178,12 @@ public class SelectCreator extends AbstractSqlCreator implements Cloneable {
         return this;
     }
 
+    public SubSelectCreator subSelectColumn(String alias) {
+        SubSelectBuilder subSelectBuilder = new SubSelectBuilder(alias);
+        builder.column(subSelectBuilder);
+        return new SubSelectCreator(this, subSelectBuilder);
+    }
+
     @Override
     public String toString() {
         ParameterizedPreparedStatementCreator ppsc = getPreparedStatementCreator();
