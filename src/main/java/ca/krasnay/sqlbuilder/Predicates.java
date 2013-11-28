@@ -20,6 +20,28 @@ import java.util.List;
 public final class Predicates {
 
     /**
+     * Adds a clause that checks whether ALL set bits in a bitmask are present
+     * in a numeric expression.
+     *
+     * @param expr
+     *            SQL numeric expression to check.
+     * @param bits
+     *            Integer containing the bits for which to check.
+     */
+    public static Predicate allBitsSet(final String expr, final long bits) {
+        return new Predicate() {
+            private String param;
+            public void init(AbstractSqlCreator creator) {
+                param = creator.allocateParameter();
+                creator.setParameter(param, bits);
+            }
+            public String toSql() {
+                return String.format("(%s & :%s) = :%s", expr, param, param);
+            }
+        };
+    }
+
+    /**
      * Joins a series of predicates with AND.
      */
     public static Predicate and(Predicate... predicates) {
@@ -31,6 +53,28 @@ public final class Predicates {
      */
     public static Predicate and(List<Predicate> predicates) {
         return join("and", predicates);
+    }
+
+    /**
+     * Adds a clause that checks whether ANY set bits in a bitmask are present
+     * in a numeric expression.
+     *
+     * @param expr
+     *            SQL numeric expression to check.
+     * @param bits
+     *            Integer containing the bits for which to check.
+     */
+    public static Predicate anyBitsSet(final String expr, final long bits) {
+        return new Predicate() {
+            private String param;
+            public void init(AbstractSqlCreator creator) {
+                param = creator.allocateParameter();
+                creator.setParameter(param, bits);
+            }
+            public String toSql() {
+                return String.format("(%s & :%s) > 0", expr, param);
+            }
+        };
     }
 
     /**
