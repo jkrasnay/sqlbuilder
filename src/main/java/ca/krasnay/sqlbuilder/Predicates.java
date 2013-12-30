@@ -20,6 +20,13 @@ import java.util.List;
 public final class Predicates {
 
     /**
+     * Returns a predicate that does not constrain the result set.
+     */
+    public static Predicate all() {
+        return is("true");
+    }
+
+    /**
      * Adds a clause that checks whether ALL set bits in a bitmask are present
      * in a numeric expression.
      *
@@ -152,6 +159,23 @@ public final class Predicates {
      */
     public static Predicate in(final String expr, final Object... values) {
         return in(expr, Arrays.asList(values));
+    }
+
+    /**
+     * Returns a predicate that takes no parameters. The given SQL expression is
+     * used directly.
+     *
+     * @param sql
+     *            SQL text of the expression
+     */
+    public static Predicate is(final String sql) {
+        return new Predicate() {
+            public String toSql() {
+                return sql;
+            }
+            public void init(AbstractSqlCreator creator) {
+            }
+        };
     }
 
     /**
