@@ -3,6 +3,19 @@
 This package contains a number of utility classes to simplify working
 with SQL.
 
+## Maven
+
+Add the following dependency to your POM:
+
+    <dependency>
+      <groupId>ca.krasnay</groupId>
+      <artifactId>sqlbuilder</artifactId>
+      <version>1.0</version>
+    </dependency>
+
+SQL Builder depends on slf4j and Spring JDBC, so be sure to add the
+desired versions of these to your `<dependencyManagement>` section.
+
 ## Builders
 
 Builders simplify the creation of SQL strings. They know a little bit
