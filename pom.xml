@@ -9,6 +9,7 @@
 
   <name>SQL Builder</name>
   <description>A lightweight library for building and executing SQL statements.</description>
+  <url>https://github.com/jkrasnay/sqlbuilder</url>
 
   <licenses>
     <license>
