@@ -236,6 +236,8 @@ public class Mapping<T> {
 
     private List<Column> columns = new ArrayList<Column>();
 
+    private List<String> ignoredFields = new ArrayList<String>();
+
     public Mapping(OrmConfig ormConfig, Class<T> clazz, String table) {
         this.ormConfig = ormConfig;
         this.clazz = clazz;
@@ -247,13 +249,23 @@ public class Mapping<T> {
         return this;
     }
 
-    public Mapping<T> addColumn(String name) {
-        addColumn(new Column(name));
+    public Mapping<T> addColumn(String fieldName) {
+        addColumn(new Column(fieldName));
         return this;
     }
 
-    public Mapping<T> addColumn(String name, Converter<?> converter) {
-        addColumn(new Column(name, name, converter));
+    public Mapping<T> addColumn(String fieldName, String columnName) {
+        addColumn(new Column(fieldName, columnName));
+        return this;
+    }
+
+    public Mapping<T> addColumn(String fieldName, Converter<?> converter) {
+        addColumn(new Column(fieldName, converter));
+        return this;
+    }
+
+    public Mapping<T> addColumn(String fieldName, String columnName, Converter<?> converter) {
+        addColumn(new Column(fieldName, columnName, converter));
         return this;
     }
 
@@ -268,7 +280,8 @@ public class Mapping<T> {
         }
 
         for (Field f : ReflectionUtils.getDeclaredFieldsInHierarchy(clazz)) {
-            if (!isFieldMapped(f.getName())) {
+            if (!isFieldMapped(f.getName())
+                    && !ignoredFields.contains(f.getName())) {
                 addColumn(f.getName());
             }
         }
@@ -352,7 +365,7 @@ public class Mapping<T> {
         if (column.getConverter() != null) {
             return column.getConverter();
         } else {
-            Field field = ReflectionUtils.getDeclaredFieldInHierarchy(clazz, column.getFieldName());
+            Field field = ReflectionUtils.getDeclaredFieldWithPath(clazz, column.getFieldName());
             return ormConfig.getConverterFactory().getConverter(field.getType());
         }
     }
@@ -363,7 +376,7 @@ public class Mapping<T> {
 
     @SuppressWarnings("unchecked")
     private Object getFieldValueAsColumn(T entity, Column column) {
-        Object fieldValue = ReflectionUtils.getFieldValue(entity, column.getFieldName());
+        Object fieldValue = ReflectionUtils.getFieldValueWithPath(entity, column.getFieldName());
         @SuppressWarnings("rawtypes")
         Converter converter = getConverter(column);
         return converter.convertFieldValueToColumn(fieldValue);
@@ -383,6 +396,18 @@ public class Mapping<T> {
     private int getVersion(T entity) {
         Object value = ReflectionUtils.getFieldValue(entity, versionColumn.getFieldName());
         return ((Number) value).intValue();
+    }
+
+    /**
+     * Indicates that the given field is to be ignored by a subsequent
+     * invocation of {@link #addFields()}.
+     *
+     * @param fieldName
+     *            Name of the field to ignore.
+     */
+    public Mapping<T> ignoreField(String fieldName) {
+        ignoredFields.add(fieldName);
+        return this;
     }
 
     /**
@@ -461,7 +486,7 @@ public class Mapping<T> {
             @SuppressWarnings("rawtypes")
             Converter converter = getConverter(column);
             Object fieldValue = converter.getFieldValueFromResultSet(rs, column.getColumnName());
-            ReflectionUtils.setFieldValue(entity, column.getFieldName(), fieldValue);
+            ReflectionUtils.setFieldValueWithPath(entity, column.getFieldName(), fieldValue);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }

@@ -8,14 +8,27 @@ package ca.krasnay.sqlbuilder.orm;
  */
 public class Column {
 
+    /**
+     * Returns the portion of the field name after the last dot, as field names
+     * may actually be paths.
+     */
+    private static String toColumnName(String fieldName) {
+        int lastDot = fieldName.indexOf('.');
+        if (lastDot > -1) {
+            return fieldName.substring(lastDot + 1);
+        } else {
+            return fieldName;
+        }
+    }
+
     private String columnName;
 
     private String fieldName;
 
     private Converter<?> converter;
 
-    public Column(String name) {
-        this(name, name);
+    public Column(String fieldName) {
+        this(fieldName, toColumnName(fieldName));
     }
 
     public Column(String fieldName, String columnName) {
@@ -24,7 +37,7 @@ public class Column {
 
 
     public Column(String fieldName, Converter<?> converter) {
-        this(fieldName, fieldName, converter);
+        this(fieldName, toColumnName(fieldName), converter);
     }
 
     public Column(String fieldName, String columnName, Converter<?> converter) {
