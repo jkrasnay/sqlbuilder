@@ -3,6 +3,7 @@ package ca.krasnay.sqlbuilder.orm;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Modifier;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -280,7 +281,8 @@ public class Mapping<T> {
         }
 
         for (Field f : ReflectionUtils.getDeclaredFieldsInHierarchy(clazz)) {
-            if (!isFieldMapped(f.getName())
+            if (!Modifier.isStatic(f.getModifiers())
+                    && !isFieldMapped(f.getName())
                     && !ignoredFields.contains(f.getName())) {
                 addColumn(f.getName());
             }
