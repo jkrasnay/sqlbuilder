@@ -1,0 +1,27 @@
+#!/bin/bash
+
+GROUP=ca/krasnay
+PROJECT=sqlbuilder
+
+if [ -z "$1" ]; then
+    echo "Usage: fetch-javadoc <version>"
+    exit 1
+fi
+
+VER=$1
+
+echo "Fetching Javadoc for $PROJECT $VER..."
+
+if ! curl -O http://repo1.maven.org/maven2/$GROUP/$PROJECT/$VER/$PROJECT-$VER-javadoc.jar; then
+    echo "Failed to download Javadoc for $PROJECT $VER"
+    exit 2
+fi
+
+mkdir -p javadoc/$VER
+(cd javadoc/$VER && unzip ../../$PROJECT-$VER-javadoc.jar)
+rm $PROJECT-$VER-javadoc.jar
+
+echo
+echo "NOTE: Remember to update references to the latest, then do a git commit -a and git push to deploy."
+echo
+
