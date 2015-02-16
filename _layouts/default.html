@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <link rel="stylesheet" href="{{site.url}}/css/normalize.css">
+  <link rel="stylesheet" href="{{site.url}}/css/syntax.css">
+  <link rel="stylesheet" href="{{site.url}}/css/styles.css">
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,600' rel='stylesheet' type='text/css'>
+  </head>
+  <body>
+    <div class="Banner">
+      <div class="Banner-content">
+        <div class="Banner-nav">
+          <a class="Banner-navLink" href="{{ site.url }}/">Home</a>
+          <a class="Banner-navLink" href="{{ site.url }}/changelog">Changelog</a>
+          <a class="Banner-navLink" href="{{ site.url }}/javadoc/1.2">Javadoc</a>
+          <a class="Banner-navLink" href="https://github.com/jkrasnay/sqlbuilder">Github</a>
+        </div>
+        <div class="Banner-project">SQL Builder</div>
+        <div class="Banner-tagline">SQL Builder Library for Java</div>
+      </div>
+    </div>
+    <div class="Content">
+      {{ content }}
+    </div>
+    <div class="Footer">
+      <div class="Footer-content">
+        <p>SQL Builder was built by <a href="mailto:john@krasnay.ca">John Krasnay</a>.</p>
+      </div>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,80 @@
+body {
+  font: 14px Open Sans, Helvetica Neue, Helvetica, Arial, sans-serif;
+  margin: 0;
+}
+
+pre {
+  background-color: #f5f5f5;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  color: #333;
+  display: block;
+  font-size: 13px;
+  line-height: 1.42857;
+  margin: 0 0 10px;
+  padding: 9.5px;
+  word-break: break-all;
+  word-wrap: break-word;
+}
+
+code, kbd, pre, samp {
+  font-family: Menlo,Monaco,Consolas,"Courier New",monospace;
+}
+
+/*
+ * Components
+ */
+
+.Banner {
+  background-color: #333;
+  color: white;
+  padding: 20px;
+}
+
+.Banner-content {
+  margin: auto;
+  width: 700px;
+}
+
+.Banner-nav {
+  float: right;
+  text-align: right;
+}
+
+.Banner-navLink {
+  border-radius: 4px;
+  color: #fc0;
+  font-weight: bold;
+  padding: 4px 8px;
+  text-decoration: none;
+}
+
+.Banner-navLink:hover {
+  background-color: #111;
+}
+
+.Banner-project {
+  font-size: 40px;
+}
+
+.Banner-tagline {
+  font-size: 18px;
+}
+
+.Content {
+  margin: auto;
+  min-height: 600px;
+  width: 700px;
+}
+
+.Footer {
+  background-color: #333;
+  color: white;
+  padding: 20px;
+}
+
+.Footer-content {
+  margin: auto;
+  width: 700px;
+}
+

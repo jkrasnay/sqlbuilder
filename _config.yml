@@ -1,0 +1,7 @@
+defaults:
+  -
+    values:
+      layout: "default"
+
+highlighter: pygments
+
