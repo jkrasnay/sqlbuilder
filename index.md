@@ -94,6 +94,34 @@ In this example, the creator creates the prepared statement `select
 firstName from Employee where id = ?`, and uses the JDBC driver to
 safely escape the value of `id`.
 
+One nice thing about creators is that you can call their methods in any
+order you like, and they'll still produce the correct SQL. For example,
+consider the common case where different queries can be performed based
+on the presence of requested parameters.
+
+{% highlight java linenos %}
+SelectCreator sc = new SelectCreator()
+.column("name")
+.column("age")
+.from("Employee e");
+
+if (deptId != null) {
+    sc.where(eq("e.deptId", deptId));
+}
+{% endhighlight %}
+
+You can even conditionally join other tables:
+
+{% highlight java linenos %}
+if (deptName != null) {
+    sc
+    .column("d.name as deptName")
+    .join("Dept d on e.deptId = d.id")
+    .where(eq("d.name", deptName));
+}
+{% endhighlight %}
+
+
 
 ## Predicates
 
