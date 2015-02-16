@@ -2,6 +2,9 @@ package ca.krasnay.sqlbuilder.orm;
 
 import javax.sql.DataSource;
 
+import ca.krasnay.sqlbuilder.Dialect;
+import ca.krasnay.sqlbuilder.Supplier;
+
 /**
  * Configuration of the ORM system. Each mapping must be constructed with one of
  * these objects.
@@ -12,43 +15,30 @@ public class OrmConfig {
 
     private DataSource dataSource;
 
-    private IdSourceFactory idSourceFactory;
+    private Dialect dialect;
 
     private ConverterFactory converterFactory = new DefaultConverterFactory();
 
-    public OrmConfig() {
+    public OrmConfig(DataSource dataSource, Dialect dialect) {
+        super();
+        this.dataSource = dataSource;
+        this.dialect = dialect;
+    }
+
+    public ConverterFactory getConverterFactory() {
+        return converterFactory;
     }
 
     public DataSource getDataSource() {
         return dataSource;
     }
 
-    public IdSourceFactory getIdSourceFactory() {
-        return idSourceFactory;
+    public Dialect getDialect() {
+        return dialect;
     }
 
-    public OrmConfig setDataSource(DataSource dataSource) {
-        this.dataSource = dataSource;
-        return this;
-    }
-
-    public OrmConfig setIdSource(final IdSource idSource) {
-        this.idSourceFactory = new IdSourceFactory() {
-            @Override
-            public IdSource getIdSource(DataSource dataSource, Mapping<?> mapping) {
-                return idSource;
-            }
-        };
-        return this;
-    }
-
-    public OrmConfig setIdSourceFactory(IdSourceFactory idSourceFactory) {
-        this.idSourceFactory = idSourceFactory;
-        return this;
-    }
-
-    public ConverterFactory getConverterFactory() {
-        return converterFactory;
+    public Supplier<Integer> getSequence(String sequenceName) {
+        return dialect.getSequence(dataSource, sequenceName);
     }
 
     public OrmConfig setConverterFactory(ConverterFactory converterFactory) {

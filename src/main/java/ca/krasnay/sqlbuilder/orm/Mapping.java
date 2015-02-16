@@ -18,6 +18,7 @@ import ca.krasnay.sqlbuilder.DeleteCreator;
 import ca.krasnay.sqlbuilder.InsertCreator;
 import ca.krasnay.sqlbuilder.Predicate;
 import ca.krasnay.sqlbuilder.SelectCreator;
+import ca.krasnay.sqlbuilder.Supplier;
 import ca.krasnay.sqlbuilder.UpdateCreator;
 
 /**
@@ -27,7 +28,7 @@ import ca.krasnay.sqlbuilder.UpdateCreator;
  * to the equivalent mapping methods.
  *
  * Each mapping must be provided with an {@link OrmConfig} object representing
- * the ORM environment, including which data source and {@link IdSource} to use.
+ * the ORM environment, including which data source and {@link Supplier} to use.
  *
  * There are a number of features of a full-fledged ORM tool such Hibernate that
  * this class <i>doesn't</i> try to do:
@@ -413,20 +414,19 @@ public class Mapping<T> {
     }
 
     /**
-     * Insert entity object. Its "id" field gets populated in the process.
+     * Insert entity object. The caller must first initialize the primary key
+     * field.
      */
     public T insert(T entity) {
 
-        if (isPersistent(entity)) {
-            throw new RuntimeException(String.format("Tried to insert object of type %s with existing id %d",
-                    entity.getClass().getSimpleName(), getPrimaryKey(entity)));
+        if (!hasPrimaryKey(entity)) {
+            throw new RuntimeException(String.format("Tried to insert entity of type %s with null or zero primary key",
+                    entity.getClass().getSimpleName()));
         }
-
-        Object id = ormConfig.getIdSourceFactory().getIdSource(ormConfig.getDataSource(), this).nextId();
 
         InsertCreator insert = new InsertCreator(table);
 
-        insert.setValue(idColumn.getColumnName(), id);
+        insert.setValue(idColumn.getColumnName(), getPrimaryKey(entity));
 
         if (versionColumn != null) {
             insert.setValue(versionColumn.getColumnName(), 0);
@@ -437,8 +437,6 @@ public class Mapping<T> {
         }
 
         new JdbcTemplate(ormConfig.getDataSource()).update(insert);
-
-        ReflectionUtils.setFieldValue(entity, idColumn.getFieldName(), id);
 
         if (versionColumn != null) {
             ReflectionUtils.setFieldValue(entity, versionColumn.getFieldName(), 0);
@@ -467,11 +465,10 @@ public class Mapping<T> {
     }
 
     /**
-     * Returns true if this entity has already been inserted into the database.
-     * By default, returns true if the primary key is not null, and for numeric
+     * Returns true if this entity's primary key is not null, and for numeric
      * fields, is non-zero.
      */
-    public boolean isPersistent(T entity) {
+    private boolean hasPrimaryKey(T entity) {
         Object pk = getPrimaryKey(entity);
         if (pk == null) {
             return false;
@@ -519,8 +516,8 @@ public class Mapping<T> {
      */
     public T update(T entity) throws RowNotFoundException, OptimisticLockException {
 
-        if (!isPersistent(entity)) {
-            throw new RuntimeException(String.format("Tried to update non-persistent object of type %s", entity
+        if (!hasPrimaryKey(entity)) {
+            throw new RuntimeException(String.format("Tried to update entity of type %s without a primary key", entity
                     .getClass().getSimpleName()));
         }
 

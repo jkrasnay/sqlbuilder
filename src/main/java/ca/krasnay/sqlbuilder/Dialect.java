@@ -1,5 +1,7 @@
 package ca.krasnay.sqlbuilder;
 
+import javax.sql.DataSource;
+
 /**
  * Interface representing a SQL dialect. Dialects can modify SQL queries in
  * database server-specific ways.
@@ -32,4 +34,15 @@ public interface Dialect {
      *            Index into the result set of the first row returned.
      */
     public String createPageSelect(String sql, int limit, int offset);
+
+    /**
+     * Returns an integer supplier representing a database sequence.
+     *
+     * @param dataSource
+     *            DataSource where the sequence exists.
+     * @param sequenceName
+     *            Name of the sequence.
+     */
+    public Supplier<Integer> getSequence(DataSource dataSource, String sequenceName);
+
 }

@@ -7,6 +7,8 @@ import junit.framework.TestCase;
 import org.h2.jdbcx.JdbcDataSource;
 import org.springframework.jdbc.core.JdbcTemplate;
 
+import ca.krasnay.sqlbuilder.PostgresqlDialect;
+
 public class MappingTest extends TestCase {
 
     public static class Employee {
@@ -26,9 +28,7 @@ public class MappingTest extends TestCase {
         t.update("create table Employee (id int primary key, version int not null, name varchar(255))");
         t.update("create sequence myseq start with 1");
 
-        OrmConfig ormConfig = new OrmConfig()
-        .setDataSource(ds)
-        .setIdSource(new PostgresqlSequenceIdSource(ds, "myseq"));
+        OrmConfig ormConfig = new OrmConfig(ds, new PostgresqlDialect());
 
         Mapping<Employee> mapping = new Mapping<Employee>(ormConfig, Employee.class, "Employee")
         .setIdColumn(new Column("id"))
@@ -52,6 +52,14 @@ public class MappingTest extends TestCase {
 
 
         // Insert
+
+        try {
+            mapping.insert(emp);
+            fail("Expected error due to unset primary key");
+        } catch (Exception e1) {
+        }
+
+        emp.id = 1;
 
         mapping.insert(emp);
 

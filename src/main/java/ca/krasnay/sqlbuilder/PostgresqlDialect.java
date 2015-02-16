@@ -2,6 +2,8 @@ package ca.krasnay.sqlbuilder;
 
 import java.io.Serializable;
 
+import javax.sql.DataSource;
+
 /**
  * Dialect for PostgreSQL.
  *
@@ -19,4 +21,8 @@ public class PostgresqlDialect implements Dialect, Serializable {
         return String.format("%s limit %d offset %d", sql, limit, offset);
     }
 
+    @Override
+    public Supplier<Integer> getSequence(DataSource dataSource, String sequenceName) {
+        return new PostgresqlSequence(dataSource, sequenceName);
+    }
 }
