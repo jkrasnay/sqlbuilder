@@ -1,5 +1,7 @@
 package ca.krasnay.sqlbuilder.orm;
 
+import static ca.krasnay.sqlbuilder.Predicates.eq;
+
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -326,10 +328,10 @@ public class Mapping<T> {
     }
 
     /**
-     * Creates a Query object.
+     * Creates a Query object returning rows matching the given predicate.
      */
-    public Query createQuery() {
-        return new Query();
+    public Query findWhere(Predicate predicate) {
+        return new Query().where(predicate);
     }
 
     /**
@@ -354,14 +356,7 @@ public class Mapping<T> {
      *             If no such object was found.
      */
     public T findById(Object id) throws RowNotFoundException {
-
-        List<T> result = createQuery().whereEquals(idColumn.getColumnName(), id).getResultList();
-
-        if (result.size() == 0) {
-            throw new RowNotFoundException(table, id);
-        } else {
-            return result.get(0);
-        }
+        return findWhere(eq(idColumn.getColumnName(), id)).getSingleResult();
     }
 
     private Converter<?> getConverter(Column column) {
