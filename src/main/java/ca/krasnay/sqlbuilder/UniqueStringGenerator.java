@@ -19,11 +19,16 @@ import java.security.SecureRandom;
  * so an 8 character string with a million samples increases the odds of
  * collision to 0.2%.
  *
+ * <p>To avoid an embarrassing accident, we maintain a blacklist of offensive
+ * words, and avoid generating a sequence that contains one of these
+ *
  * @author <a href="mailto:john@krasnay.ca">John Krasnay</a>
  */
 public class UniqueStringGenerator implements Supplier<String> {
 
     private static final String BASE62 = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+
+    private String[] blacklist = "anal,anus,ass,boob,butt,clit,cock,cum,cunt,dick,fuck,gay,nigg,poon,poop,porn,pube,sex,shit,smut,tit,twat,vag".split(",");
 
     private int length;
 
@@ -31,8 +36,34 @@ public class UniqueStringGenerator implements Supplier<String> {
         this.length = length;
     }
 
+    boolean isOffensive(String s) {
+
+        String normalized = s.toLowerCase()
+                .replace("0", "o")
+                .replace("1", "i")
+                .replace("5", "s")
+                .replace("v", "u");
+
+        for (String badWord : blacklist) {
+            if (normalized.contains(badWord)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     @Override
     public String get() {
+        while (true) {
+            String s = generate();
+            if (!isOffensive(s)) {
+                return s;
+            }
+        }
+    }
+
+    private String generate() {
         SecureRandom random = new SecureRandom();
         StringBuilder sb = new StringBuilder();
         int n = BASE62.length();
