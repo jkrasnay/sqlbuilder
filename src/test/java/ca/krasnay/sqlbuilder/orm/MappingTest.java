@@ -40,7 +40,7 @@ public class MappingTest extends TestCase {
         try {
             emp = mapping.findById(42);
             fail("Expected exception");
-        } catch (RowNotFoundException e) {
+        } catch (SingleResultException e) {
         }
 
         emp = new Employee();
@@ -106,7 +106,7 @@ public class MappingTest extends TestCase {
         try {
             emp = mapping.findById(1);
             fail("Expected exception");
-        } catch (RowNotFoundException e) {
+        } catch (SingleResultException e) {
         }
 
     }
