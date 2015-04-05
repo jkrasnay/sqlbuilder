@@ -105,7 +105,7 @@ public class Mapping<T> {
         private SelectCreator select;
 
         private Query() {
-            this.select = new SelectCreator().from(table);
+            this.select = new SelectCreator().from(table + " " + alias);
         }
 
         public Query and(Predicate predicate) {
@@ -123,14 +123,14 @@ public class Mapping<T> {
 
         public List<T> getResultList() {
 
-            select.column(idColumn.getColumnName());
+            select.column(alias + "." + idColumn.getColumnName());
 
             if (versionColumn != null) {
-                select.column(versionColumn.getColumnName());
+                select.column(alias + "." + versionColumn.getColumnName());
             }
 
             for (Column column : columns) {
-                select.column(column.getColumnName());
+                select.column(alias + "." + column.getColumnName());
             }
 
             return new JdbcTemplate(ormConfig.getDataSource()).query(select, new RowMapper<T>() {
@@ -189,6 +189,11 @@ public class Mapping<T> {
             }
         }
 
+        public Query join(String join) {
+            select.join(join);
+            return this;
+        }
+
         public Query orderBy(String expr) {
             select.orderBy(expr);
             return this;
@@ -233,6 +238,8 @@ public class Mapping<T> {
     private Class<T> clazz;
 
     private String table;
+
+    private String alias = "_t0";
 
     private Column idColumn;
 
@@ -473,6 +480,11 @@ public class Mapping<T> {
             }
         }
         return true;
+    }
+
+    public Mapping<T> setAlias(String alias) {
+        this.alias = alias;
+        return this;
     }
 
     public void setFieldValueFromResultSet(T entity, ResultSet rs, Column column) {
