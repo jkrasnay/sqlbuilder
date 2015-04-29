@@ -130,7 +130,11 @@ public class Mapping<T> {
             }
 
             for (Column column : columns) {
-                select.column(alias + "." + column.getColumnName());
+                if (column.isReadOnly()) {
+                    select.column(column.getColumnExpr() + " as " + column.getColumnName());
+                } else {
+                    select.column(alias + "." + column.getColumnName());
+                }
             }
 
             return new JdbcTemplate(ormConfig.getDataSource()).query(select, new RowMapper<T>() {
@@ -435,7 +439,9 @@ public class Mapping<T> {
         }
 
         for (Column column : columns) {
-            insert.setValue(column.getColumnName(), getFieldValueAsColumn(entity, column));
+            if (!column.isReadOnly()) {
+                insert.setValue(column.getColumnName(), getFieldValueAsColumn(entity, column));
+            }
         }
 
         new JdbcTemplate(ormConfig.getDataSource()).update(insert);
@@ -538,7 +544,9 @@ public class Mapping<T> {
         }
 
         for (Column column : columns) {
-            update.setValue(column.getColumnName(), getFieldValueAsColumn(entity, column));
+            if (!column.isReadOnly()) {
+                update.setValue(column.getColumnName(), getFieldValueAsColumn(entity, column));
+            }
         }
 
         int rows = new JdbcTemplate(ormConfig.getDataSource()).update(update);

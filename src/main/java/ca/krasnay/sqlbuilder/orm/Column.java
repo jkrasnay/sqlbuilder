@@ -21,6 +21,8 @@ public class Column {
         }
     }
 
+    private String columnExpr;
+
     private String columnName;
 
     private String fieldName;
@@ -32,9 +34,42 @@ public class Column {
     }
 
     public Column(String fieldName, String columnName) {
-        this(fieldName, columnName, null);
+        this(fieldName, columnName, (Converter<?>) null);
     }
 
+    /**
+     * Constructor for a read-only column. Read-only columns are used only in
+     * queries and are ignored for inserts and updates, and may be populated
+     * using a SQL query.
+     *
+     * <p>Use read-only columns where the database column is calculated using
+     * a trigger, or where you want to set a field in your Java object based
+     * on a SQL expression.
+     *
+     * <p>Examples:
+     *
+     * <pre>
+     * mapping.addColumn(new Column("size", "length(content)", "size");
+     * mapping.addColumn(new Column("children", "(select count(*) from Child c where c.parentId = p.id)", "children");
+     *
+     * // "used" here is calculated dynamically in a trigger
+     * mapping.addColumn(new Column("used", "used", "used"));
+     * </pre>
+     *
+     * @param fieldName
+     *            Name of the field in the Java class. If the field is in an
+     *            embedded object, this should be a dot-separated path, e.g.
+     *            <code>address.city</code>.
+     * @param columnExpr
+     *            SQL expression that produces the value for the field.
+     * @param columnName
+     *            Column name used as an alias.
+     */
+    public Column(String fieldName, String columnExpr, String columnName) {
+        this.fieldName = fieldName;
+        this.columnExpr = columnExpr;
+        this.columnName = columnName;
+    }
 
     public Column(String fieldName, Converter<?> converter) {
         this(fieldName, toColumnName(fieldName), converter);
@@ -44,6 +79,10 @@ public class Column {
         this.fieldName = fieldName;
         this.columnName = columnName;
         this.converter = converter;
+    }
+
+    public String getColumnExpr() {
+        return columnExpr;
     }
 
     public String getColumnName() {
@@ -58,4 +97,7 @@ public class Column {
         return fieldName;
     }
 
+    public boolean isReadOnly() {
+        return columnExpr != null;
+    }
 }
