@@ -376,6 +376,23 @@ public class Mapping<T> {
         return findWhere(eq(idColumn.getColumnName(), id)).getSingleResult();
     }
 
+    /**
+     * Finds an entity given its primary key, returning null if the entity was
+     * not found. Some developers may be more accustomed to this approach to
+     * handling the not-found case, while other developers prefer the more
+     * descriptive exception thrown by {@link #findById(Object)}. The latter may
+     * still find this method helpful, though, when they want to detect a
+     * missing entity and are having problems with the
+     * {@link RowNotFoundException} prematurely marking the transaction for
+     * rollback.
+     *
+     * @throws TooManyRowsException
+     *             If more that one object was returned for the given ID.
+     */
+    public T findByIdOrNull(Object id) throws TooManyRowsException {
+        return findWhere(eq(idColumn.getColumnName(), id)).getSingleResultOrNull();
+    }
+
     private Converter<?> getConverter(Column column) {
         if (column.getConverter() != null) {
             return column.getConverter();
