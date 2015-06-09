@@ -163,15 +163,19 @@ public class Mapping<T> {
         /**
          * Returns a single result from the query.
          *
-         * @throws SingleResultException
-         *             if the query returned no rows or more than one row
+         * @throws RowNotFoundException
+         *             if the query returned zero rows
+         * @throws TooManyRowsException
+         *             if the query returned more than one row
          */
-        public T getSingleResult() throws SingleResultException {
+        public T getSingleResult() throws RowNotFoundException, TooManyRowsException {
             List<T> results = getResultList();
             if (results.size() == 1) {
                 return results.get(0);
+            } else if (results.size() == 0) {
+                throw new RowNotFoundException(select);
             } else {
-                throw new SingleResultException(results.size(), select);
+                throw new TooManyRowsException(results.size(), select);
             }
         }
 
@@ -179,17 +183,17 @@ public class Mapping<T> {
          * Returns a single result from the query. If now matching records were
          * found, returns null.
          *
-         * @throws SingleResultException
+         * @throws TooManyRowsException
          *             if the query returned more than one row
          */
-        public T getSingleResultOrNull() throws SingleResultException {
+        public T getSingleResultOrNull() throws TooManyRowsException {
             List<T> results = getResultList();
             if (results.size() == 1) {
                 return results.get(0);
             } else if (results.size() == 0) {
                 return null;
             } else {
-                throw new SingleResultException(results.size(), select);
+                throw new TooManyRowsException(results.size(), select);
             }
         }
 
@@ -365,8 +369,10 @@ public class Mapping<T> {
      *
      * @throws RowNotFoundException
      *             If no such object was found.
+     * @throws TooManyRowsException
+     *             If more that one object was returned for the given ID.
      */
-    public T findById(Object id) throws RowNotFoundException {
+    public T findById(Object id) throws RowNotFoundException, TooManyRowsException {
         return findWhere(eq(idColumn.getColumnName(), id)).getSingleResult();
     }
 

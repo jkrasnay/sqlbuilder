@@ -9,11 +9,11 @@ import ca.krasnay.sqlbuilder.SelectCreator;
  * @author Alex Rykov
  *
  */
-public class SingleResultException extends RuntimeException {
+public class TooManyRowsException extends RuntimeException {
 
     private static final long serialVersionUID = 1L;
 
-    SingleResultException(int count, SelectCreator creator) {
+    TooManyRowsException(int count, SelectCreator creator) {
         super("Expected single result, found " + count + " rows for this query: " + creator);
     }
 
