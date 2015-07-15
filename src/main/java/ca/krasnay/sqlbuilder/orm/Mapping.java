@@ -202,6 +202,11 @@ public class Mapping<T> {
             return this;
         }
 
+        public Query leftJoin(String join) {
+            select.leftJoin(join);
+            return this;
+        }
+
         public Query orderBy(String expr) {
             select.orderBy(expr);
             return this;
