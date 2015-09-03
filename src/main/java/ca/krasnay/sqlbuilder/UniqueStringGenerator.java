@@ -26,13 +26,22 @@ import java.security.SecureRandom;
  */
 public class UniqueStringGenerator implements Supplier<String> {
 
-    private static final String BASE62 = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+    public static final String BASE36 = "0123456789abcdefghijklmnopqrstuvwxyz";
+
+    public static final String BASE62 = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 
     private String[] blacklist = "anal,anus,ass,boob,butt,clit,cock,cum,cunt,dick,fuck,gay,nigg,poon,poop,porn,pube,sex,shit,smut,tit,twat,vag".split(",");
+
+    private String alphabet;
 
     private int length;
 
     public UniqueStringGenerator(int length) {
+        this(BASE62, length);
+    }
+
+    public UniqueStringGenerator(String alphabet, int length) {
+        this.alphabet = alphabet;
         this.length = length;
     }
 
@@ -66,9 +75,9 @@ public class UniqueStringGenerator implements Supplier<String> {
     private String generate() {
         SecureRandom random = new SecureRandom();
         StringBuilder sb = new StringBuilder();
-        int n = BASE62.length();
+        int n = alphabet.length();
         for (int i = 0; i < length; i++) {
-            sb.append(BASE62.charAt(random.nextInt(n)));
+            sb.append(alphabet.charAt(random.nextInt(n)));
         }
         return sb.toString();
     }
