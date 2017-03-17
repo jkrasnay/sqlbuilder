@@ -1,5 +1,11 @@
 package ca.krasnay.sqlbuilder;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.jdbc.core.PreparedStatementCreator;
+import org.springframework.jdbc.core.SqlTypeValue;
+import org.springframework.jdbc.core.StatementCreatorUtils;
+
 import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -11,10 +17,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.jdbc.core.PreparedStatementCreator;
 
 /**
  * Implementation of Spring's PreparedStatementCreator that allows for the
@@ -104,7 +106,9 @@ public class ParameterizedPreparedStatementCreator implements Cloneable, Prepare
         PreparedStatement ps = con.prepareStatement(sap.getSql());
 
         for (int i = 0; i < sap.getParams().size(); i++) {
-            ps.setObject(i + 1, sap.getParams().get(i));
+            Object paramValue = sap.getParams().get(i);
+            int paramSqlType = paramValue != null ? StatementCreatorUtils.javaTypeToSqlParameterType(paramValue.getClass()) : SqlTypeValue.TYPE_UNKNOWN;
+            StatementCreatorUtils.setParameterValue(ps, i + 1, paramSqlType, paramValue);
         }
 
         return ps;
