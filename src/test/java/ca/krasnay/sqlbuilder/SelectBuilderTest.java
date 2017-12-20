@@ -68,6 +68,21 @@ public class SelectBuilderTest extends TestCase {
 
     }
 
+    public void testLimits() {
+
+        SelectBuilder sb = new SelectBuilder()
+                .from("test_table")
+                .column("a")
+                .column("b")
+                .limit(10);
+
+        assertEquals("select a, b from test_table limit 10", sb.toString());
+
+        sb = sb.limit(10, 4);
+
+        assertEquals("select a, b from test_table limit 10, 4", sb.toString());
+    }
+
     public void testUnions() {
 
         SelectBuilder sb = new SelectBuilder()

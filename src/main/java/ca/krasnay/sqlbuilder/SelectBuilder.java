@@ -94,6 +94,10 @@ public class SelectBuilder extends AbstractSqlBuilder implements Cloneable, Seri
 
     private List<String> orderBys = new ArrayList<String>();
 
+    private int limit = 0;
+
+    private int offset = 0;
+
     private boolean forUpdate;
 
     private boolean noWait;
@@ -163,6 +167,16 @@ public class SelectBuilder extends AbstractSqlBuilder implements Cloneable, Seri
             groupBys.add(name);
         }
         return this;
+    }
+
+    public SelectBuilder limit(int limit, int offset) {
+        this.limit = limit;
+        this.offset = offset;
+        return this;
+    }
+
+    public SelectBuilder limit(int limit) {
+        return limit(limit, 0);
     }
 
     @Override
@@ -270,6 +284,11 @@ public class SelectBuilder extends AbstractSqlBuilder implements Cloneable, Seri
                 sql.append(" nowait");
             }
         }
+
+        if(limit > 0)
+            sql.append(" limit " + limit);
+        if(offset > 0)
+            sql.append(", " + offset);
 
         return sql.toString();
     }
