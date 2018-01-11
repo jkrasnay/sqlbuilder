@@ -17,6 +17,8 @@ public class DefaultConverterFactory implements ConverterFactory {
             return converter;
         } else if (fieldClass == Locale.class) {
             return LocaleConverter.getInstance();
+        } else if (fieldClass == Class.class) {
+            return ClassConverter.getInstance();
         } else {
             // TODO limit this to known-good types, e.g. primitives and their object equivalents
             // to prevent the driver trying to serialize objects
