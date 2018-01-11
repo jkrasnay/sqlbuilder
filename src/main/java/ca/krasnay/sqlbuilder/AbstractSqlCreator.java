@@ -66,5 +66,9 @@ public abstract class AbstractSqlCreator implements PreparedStatementCreator, Se
         return this;
     }
 
+    @Override
+    public String toString() {
+        return ppsc.setSql(getBuilder().toString()).toString();
+    }
 
 }

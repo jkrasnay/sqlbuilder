@@ -172,4 +172,42 @@ public class ParameterizedPreparedStatementCreator implements Cloneable, Prepare
         return this;
     }
 
+    /**
+     * Returns the SQL with parameter values interpolated. This SQL should be
+     * only used for debugging and should NOT be executed by your application.
+     * To discourage this, the returned SQL is prefixed with "--".
+     */
+    @Override
+    public String toString() {
+
+        StringBuilder sb = new StringBuilder();
+
+        sb.append("-- ");
+
+        Matcher m = PARAM_PATTERN.matcher(sql);
+        int index = 0;
+        while (m.find(index)) {
+            sb.append(sql.substring(index, m.start()));
+            String name = m.group(1);
+            index = m.end();
+            if (parameterMap.containsKey(name)) {
+                Object param = parameterMap.get(name);
+                if (param == null) {
+                    sb.append("null");
+                } else if (param instanceof Number) {
+                    sb.append(param);
+                } else {
+                    sb.append(param.toString().replace("'", "''"));
+                }
+            } else {
+                throw new IllegalArgumentException("Unknown parameter '" + name + "' at position " + m.start());
+            }
+        }
+
+        // Any stragglers?
+        sb.append(sql.substring(index));
+
+        return sb.toString();
+    }
+
 }
