@@ -8,7 +8,7 @@ import static org.easymock.EasyMock.verify;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import junit.framework.TestCase;
@@ -40,7 +40,7 @@ public class StringMapConverterTest extends TestCase {
 
     public void testAll() throws Exception {
 
-        Map<String, String> map = new HashMap<String, String>();
+        Map<String, String> map = new LinkedHashMap<String, String>();
 
         StringMapConverter converter = new StringMapConverter();
 
