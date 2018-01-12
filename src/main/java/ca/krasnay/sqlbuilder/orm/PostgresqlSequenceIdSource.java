@@ -17,7 +17,7 @@ public class PostgresqlSequenceIdSource implements IdSource {
 
     @Override
     public Object nextId() {
-        return jdbcTemplate.queryForInt("select nextval(?)", sequenceName);
+        return jdbcTemplate.queryForObject("select nextval(?)", Integer.class, sequenceName);
     }
 
 }
