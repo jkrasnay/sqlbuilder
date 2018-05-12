@@ -273,8 +273,7 @@ public class SelectBuilder extends AbstractSqlBuilder implements Cloneable, Seri
         }
 
         appendList(sql, tables, " from ", ", ");
-        appendList(sql, tableHints, " with (", ", ");
-        sql.append(")");
+        appendList(sql, tableHints, " with (", ", ", ")");
         appendList(sql, joins, " join ", " join ");
         appendList(sql, leftJoins, " left join ", " left join ");
         appendList(sql, wheres, " where ", " and ");
