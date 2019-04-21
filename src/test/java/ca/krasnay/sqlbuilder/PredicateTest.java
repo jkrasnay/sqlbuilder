@@ -1,15 +1,12 @@
 package ca.krasnay.sqlbuilder;
 
-import static ca.krasnay.sqlbuilder.Predicates.eq;
-import static ca.krasnay.sqlbuilder.Predicates.exists;
-import static ca.krasnay.sqlbuilder.Predicates.in;
-import static ca.krasnay.sqlbuilder.Predicates.not;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import junit.framework.TestCase;
+
+import static ca.krasnay.sqlbuilder.Predicates.*;
 
 public class PredicateTest extends TestCase {
 
@@ -92,4 +89,83 @@ public class PredicateTest extends TestCase {
         assertEquals("Bob", sc.getPreparedStatementCreator().getParameterMap().get("param0"));
 
     }
+
+    public void testIsNull() {
+        SelectCreator sc = new SelectCreator()
+                .column("*")
+                .from("Emp")
+                .where(isNull("name"));
+        assertEquals("select * from Emp where name is null", sc.getBuilder().toString());
+
+    }
+
+    public void testIsNotNull() {
+        SelectCreator sc = new SelectCreator()
+                .column("*")
+                .from("Emp")
+                .where(isNotNull("name"));
+        assertEquals("select * from Emp where name is not null", sc.getBuilder().toString());
+
+    }
+
+    public void testGt() {
+
+        SelectCreator sc = new SelectCreator()
+                .column("*")
+                .from("Emp")
+                .where(gt("rank", "1"));
+
+        assertEquals("select * from Emp where rank > :param0", sc.getBuilder().toString());
+        assertEquals("1", sc.getPreparedStatementCreator().getParameterMap().get("param0"));
+
+    }
+
+    public void testGte() {
+
+        SelectCreator sc = new SelectCreator()
+                .column("*")
+                .from("Emp")
+                .where(gte("rank", "1"));
+
+        assertEquals("select * from Emp where rank >= :param0", sc.getBuilder().toString());
+        assertEquals("1", sc.getPreparedStatementCreator().getParameterMap().get("param0"));
+
+    }
+
+    public void testLt() {
+
+        SelectCreator sc = new SelectCreator()
+                .column("*")
+                .from("Emp")
+                .where(lt("rank", "1"));
+
+        assertEquals("select * from Emp where rank < :param0", sc.getBuilder().toString());
+        assertEquals("1", sc.getPreparedStatementCreator().getParameterMap().get("param0"));
+
+    }
+
+    public void testLte() {
+
+        SelectCreator sc = new SelectCreator()
+                .column("*")
+                .from("Emp")
+                .where(lte("rank", "1"));
+
+        assertEquals("select * from Emp where rank <= :param0", sc.getBuilder().toString());
+        assertEquals("1", sc.getPreparedStatementCreator().getParameterMap().get("param0"));
+
+    }
+
+    public void testLike() {
+
+        SelectCreator sc = new SelectCreator()
+                .column("*")
+                .from("Emp")
+                .where(like("name", "Bob"));
+
+        assertEquals("select * from Emp where name like ':param0'", sc.getBuilder().toString());
+        assertEquals("Bob", sc.getPreparedStatementCreator().getParameterMap().get("param0"));
+
+    }
+
 }

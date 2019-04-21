@@ -276,31 +276,113 @@ public final class Predicates {
     }
 
 
+
+    public static Predicate isNull(final String expr) {
+
+
+        return new Predicate() {
+
+            public void init(AbstractSqlCreator creator) {
+            }
+
+            public String toSql() {
+                return String.format("%s is null", expr);
+            }
+        };
+    }
+
+
+    public static Predicate isNotNull(final String expr) {
+
+
+        return new Predicate() {
+
+            public void init(AbstractSqlCreator creator) {
+            }
+
+            public String toSql() {
+                return String.format("%s is not null", expr);
+            }
+        };
+    }
+
+    public static Predicate gt(final String expr, final Object value) {
+        return new Predicate() {
+            private String param;
+            public void init(AbstractSqlCreator creator) {
+                param = creator.allocateParameter();
+                creator.setParameter(param, value);
+            }
+            public String toSql() {
+                return String.format("%s > :%s", expr, param);
+            }
+        };
+    }
+
+    public static Predicate gte(final String expr, final Object value) {
+        return new Predicate() {
+            private String param;
+            public void init(AbstractSqlCreator creator) {
+                param = creator.allocateParameter();
+                creator.setParameter(param, value);
+            }
+            public String toSql() {
+                return String.format("%s >= :%s", expr, param);
+            }
+        };
+    }
+
+    public static Predicate lt(final String expr, final Object value) {
+        return new Predicate() {
+            private String param;
+            public void init(AbstractSqlCreator creator) {
+                param = creator.allocateParameter();
+                creator.setParameter(param, value);
+            }
+            public String toSql() {
+                return String.format("%s < :%s", expr, param);
+            }
+        };
+    }
+
+    public static Predicate lte(final String expr, final Object value) {
+        return new Predicate() {
+            private String param;
+            public void init(AbstractSqlCreator creator) {
+                param = creator.allocateParameter();
+                creator.setParameter(param, value);
+            }
+            public String toSql() {
+                return String.format("%s <= :%s", expr, param);
+            }
+        };
+    }
+
+    public static Predicate like(final String expr, final Object value) {
+        return new Predicate() {
+            private String param;
+            public void init(AbstractSqlCreator creator) {
+                param = creator.allocateParameter();
+                creator.setParameter(param, value);
+            }
+            public String toSql() {
+                return String.format("%s like ':%s'",expr, param);
+            }
+        };
+    }
+
+
     /*
      * Ideas for other predicates:
      *
-     * public static Predicate neq(final String expr, final Object value) { ... }
-     *
-     * public static Predicate isNull(String expr) { ... }
-     * public static Predicate notNull(String expr) { ... }
      *
      *
      * String:
      *
      * public static Predicate eqIgnoreCase(String expr, Object) { ... }
      * public static Predicate neqIgnoreCase(final String expr, final Object value) { ... }
-     * public static Predicate like(String expr, String) { ... }
      * public static Predicate contains(final String expr, final String value) { ... }
      * public static Predicate startsWith(final String expr, final String value) { ... }
-     *
-     *
-     * Numeric:
-     *
-     * public static Predicate gt(String expr, Number) { ... }
-     * public static Predicate gte(String expr, Number) { ... }
-     * public static Predicate lt(String expr, Number) { ... }
-     * public static Predicate lte(String expr, Number) { ... }
-     *
      *
      * Date/time:
      *
