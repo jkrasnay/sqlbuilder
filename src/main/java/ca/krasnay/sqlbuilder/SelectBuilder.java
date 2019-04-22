@@ -94,6 +94,9 @@ public class SelectBuilder extends AbstractSqlBuilder implements Cloneable, Seri
 
     private List<String> orderBys = new ArrayList<String>();
 
+    private List<String> tableHints = new ArrayList<String>();
+
+
     private int limit = 0;
 
     private int offset = 0;
@@ -270,6 +273,7 @@ public class SelectBuilder extends AbstractSqlBuilder implements Cloneable, Seri
         }
 
         appendList(sql, tables, " from ", ", ");
+        appendList(sql, tableHints, " with (", ", ", ")");
         appendList(sql, joins, " join ", " join ");
         appendList(sql, leftJoins, " left join ", " left join ");
         appendList(sql, wheres, " where ", " and ");
@@ -306,6 +310,11 @@ public class SelectBuilder extends AbstractSqlBuilder implements Cloneable, Seri
 
     public SelectBuilder where(String expr) {
         wheres.add(expr);
+        return this;
+    }
+
+    public SelectBuilder with(String hint) {
+        tableHints.add(hint);
         return this;
     }
 }

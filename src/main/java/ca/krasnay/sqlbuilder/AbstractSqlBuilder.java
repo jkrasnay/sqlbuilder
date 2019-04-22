@@ -38,4 +38,11 @@ public abstract class AbstractSqlBuilder {
         }
     }
 
+    protected void appendList(StringBuilder sql, List<?> list, String init, String sep, String end) {
+
+        appendList(sql, list, init, sep);
+        if (list.size() > 0)
+            sql.append(end);
+    }
+
 }

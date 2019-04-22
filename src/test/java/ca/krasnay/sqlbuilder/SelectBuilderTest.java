@@ -100,4 +100,15 @@ public class SelectBuilderTest extends TestCase {
         assertEquals("select a, b from Foo where a > 10 union select c, d from Bar order by 1", sb.toString());
 
     }
+
+    public void testTableHints() {
+        SelectBuilder sb = new SelectBuilder("Employee")
+                .with("nolock");
+        assertEquals("select * from Employee with (nolock)", sb.toString());
+
+        sb = new SelectBuilder("Employee")
+                .with("READCOMMITTED")
+                .with("readpast");
+        assertEquals("select * from Employee with (READCOMMITTED, readpast)", sb.toString());
+    }
 }

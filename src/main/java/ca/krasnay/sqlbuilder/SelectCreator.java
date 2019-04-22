@@ -244,4 +244,9 @@ public class SelectCreator extends AbstractSqlCreator implements Cloneable {
 
         return this;
     }
+
+    public SelectCreator with(String hint) {
+        builder.with(hint);
+        return this;
+    }
 }
