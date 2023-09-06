@@ -1,6 +1,10 @@
 package ca.krasnay.sqlbuilder;
 
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 /**
  * A Spring PreparedStatementCreator that you can use like a DeleteBuilder.
  * Example usage is as follows:
@@ -50,4 +54,15 @@ public class DeleteCreator extends AbstractSqlCreator {
         return this;
     }
 
+    @Override
+    public String toString() {
+        ParameterizedPreparedStatementCreator ppsc = getPreparedStatementCreator();
+        StringBuilder sb = new StringBuilder(builder.toString());
+        List<String> params = new ArrayList<String>(ppsc.getParameterMap().keySet());
+        Collections.sort(params);
+        for (String s : params) {
+            sb.append(", ").append(s).append("=").append(ppsc.getParameterMap().get(s));
+        }
+        return sb.toString();
+    }
 }

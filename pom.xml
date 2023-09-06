@@ -6,7 +6,7 @@
   <packaging>jar</packaging>
   <version>2.1-SNAPSHOT</version>
 
-  <name>SQL Builder</name>
+  <name>gama-sqlbuilder</name>
   <description>A lightweight library for building and executing SQL statements.</description>
   <url>https://github.com/jkrasnay/sqlbuilder</url>
 
